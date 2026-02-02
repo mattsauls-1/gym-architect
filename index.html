@@ -16,11 +16,11 @@
         
         .history-item { background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left; }
         .history-date { color: var(--accent); font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; display: block; border-bottom: 1px solid #333; padding-bottom: 5px; }
-        .clear-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; margin-bottom: 15px; cursor: pointer; width: 100%; }
+        .clear-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 15px; cursor: pointer; width: 100%; border: 1px solid var(--danger); }
 
         .item { background: var(--card); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; margin-top: 8px; cursor: pointer; text-align: left; }
         .item.done { border-color: var(--accent); opacity: 0.4; }
-        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
         .last-badge { font-size: 0.65rem; background: #333; color: #00d1b2; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-weight: bold; }
         
         .log-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
@@ -29,11 +29,14 @@
 
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; border: 1px solid #333; }
-        .modal-img { width: 100%; border-radius: 12px; margin-bottom: 15px; background: #000; min-height: 200px; object-fit: cover; }
+        .modal-img-wrap { width: 100%; height: 200px; background: #000; border-radius: 12px; margin-bottom: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+        .modal-img { width: 100%; height: 100%; object-fit: contain; }
+        .modal-text { color: #aaa; font-size: 0.8rem; line-height: 1.4; text-align: left; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 8px; }
         
         .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; z-index: 100; }
         #timerDisplay { font-size: 2rem; font-weight: bold; color: var(--accent); font-family: monospace; }
-        #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; width: 100%; font-size: 1rem; cursor: pointer; text-transform: uppercase; }
+        #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; width: 100%; font-size: 1rem; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .icon-btn { font-size: 1.2rem; cursor: pointer; margin-right: 8px; }
     </style>
 </head>
 <body>
@@ -57,16 +60,17 @@
     </div>
 
     <div id="viewHistory" style="display:none">
-        <button class="clear-btn" onclick="clearAllHistory()">CLEAR ALL HISTORY</button>
+        <button class="clear-btn" onclick="clearAllHistory()">CLEAR ALL PROGRESS & HISTORY</button>
         <div id="historyList"></div>
     </div>
 </div>
 
 <div id="infoModal" class="modal" onclick="closeModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <h3 id="modalTitle" style="color: var(--accent); margin-top: 0;">INFO</h3>
-        <img id="modalImg" class="modal-img" src="" alt="Exercise Demo">
-        <button style="background:var(--accent); width:100%; padding:12px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="closeModal()">GOT IT</button>
+        <h3 id="modalTitle" style="color: var(--accent); margin: 0 0 10px 0;">INFO</h3>
+        <div class="modal-img-wrap"><img id="modalImg" class="modal-img" src="" alt="Exercise Demo"></div>
+        <div id="modalDesc" class="modal-text"></div>
+        <button style="background:var(--accent); width:100%; padding:14px; border:none; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="closeModal()">GOT IT</button>
     </div>
 </div>
 
@@ -76,15 +80,46 @@
 </div>
 
 <script>
+// --- DATABASE & STATE ---
+const exerciseData = {
+    "DB Bench Press": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Bench-Press.gif", tips: "Keep shoulder blades retracted. Drive weights up without touching them." },
+    "Cable Chest Flys": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Cable-Chest-Fly.gif", tips: "Maintain slight bend in elbows. Squeeze chest at center." },
+    "Pushups": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Push-up.gif", tips: "Back flat. Body in a straight line. Lower chest to floor." },
+    "Lat Pulldowns": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Lat-Pulldown.gif", tips: "Pull bar to upper chest. Drive elbows to back pockets." },
+    "One-Arm DB Rows": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Row.gif", tips: "Pull weight to hip, not chest. Squeeze lats." },
+    "Seated Cable Rows": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Seated-Cable-Row.gif", tips: "Pull handle to stomach, squeeze shoulder blades." },
+    "DB Overhead Press": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Shoulder-Press.gif", tips: "Press straight up. Don't arch lower back." },
+    "Lateral Raises": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Lateral-Raise.gif", tips: "Lead with pinkies to emphasize side delt." },
+    "Cable Face Pulls": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Face-Pull.gif", tips: "Pull rope to forehead. Squeeze rear delts." },
+    "Bulgarian Split Squats": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Bulgarian-Split-Squat.gif", tips: "Rear foot on bench. Drop back knee to floor." },
+    "DB Romanian Deadlifts": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Romanian-Deadlift.gif", tips: "Hinge at hips. Feel hamstring stretch." },
+    "Goblet Squats": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Goblet-Squat.gif", tips: "Weight at chest. Elbows inside knees at bottom." },
+    "Tricep Pushdowns": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Triceps-Pushdown.gif", tips: "Pin elbows to ribs. Squeeze triceps at bottom." },
+    "Bicep Curls": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Curl.gif", tips: "No swinging. Curl toward shoulders." }
+};
+
 const library = {
-    "Push": [{n:"DB Bench Press", t:"Chest"}, {n:"Incline DB Press", t:"Chest"}, {n:"Pushups", t:"Chest"}, {n:"DB Overhead Press", t:"Shoulders"}, {n:"Lateral Raises", t:"Shoulders"}, {n:"Bulgarian Split Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}],
-    "Pull": [{n:"One-Arm DB Rows", t:"Back"}, {n:"Weighted Pullups", t:"Back"}, {n:"Bicep Curls", t:"Arms"}, {n:"Face Pulls", t:"Shoulders"}],
-    "Lower": [{n:"DB Romanian Deadlifts", t:"Legs"}, {n:"KB Swings", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"Calf Raises", t:"Legs"}],
+    "Push": [{n:"DB Bench Press", t:"Chest"}, {n:"Incline DB Press", t:"Chest"}, {n:"Cable Chest Flys", t:"Chest"}, {n:"Pushups", t:"Chest"}, {n:"DB Overhead Press", t:"Shoulders"}, {n:"Lateral Raises", t:"Shoulders"}, {n:"Bulgarian Split Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}],
+    "Pull": [{n:"Lat Pulldowns", t:"Back"}, {n:"One-Arm DB Rows", t:"Back"}, {n:"Seated Cable Rows", t:"Back"}, {n:"Weighted Pullups", t:"Back"}, {n:"Bicep Curls", t:"Arms"}, {n:"DB Hammer Curls", t:"Arms"}, {n:"Cable Face Pulls", t:"Shoulders"}, {n:"Rear Delt Flyes", t:"Shoulders"}],
+    "Lower": [{n:"DB Romanian Deadlifts", t:"Legs"}, {n:"KB Swings", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"DB Lunges", t:"Legs"}, {n:"Calf Raises", t:"Legs"}],
     "Cardio": [{n:"Treadmill Run", t:"Cardio"}, {n:"Stationary Bike", t:"Cardio"}, {n:"Stairmaster", t:"Cardio"}]
 };
 
 const sequence = ["Push", "Cardio", "Pull", "Cardio", "Lower"];
 let state = { dayIdx: 0, exercises: [], completed: [], isStarted: false };
+
+// --- CORE FUNCTIONS ---
+function initApp() {
+    state.dayIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
+    document.getElementById('catDisplay').innerText = sequence[state.dayIdx].toUpperCase();
+    document.getElementById('sessionLabel').innerText = `SESSION ${state.dayIdx + 1} READY`;
+    document.getElementById('list').innerHTML = "";
+    document.getElementById('progressWrapper').style.display = 'none';
+    state.isStarted = false;
+    state.completed = [];
+    state.exercises = [];
+    updateUI();
+}
 
 function switchTab(tab) {
     document.getElementById('viewWorkout').style.display = tab === 'workout' ? 'block' : 'none';
@@ -94,20 +129,32 @@ function switchTab(tab) {
     if(tab === 'history') renderHistory();
 }
 
+window.swapEx = (idx) => {
+    const currentCat = sequence[state.dayIdx];
+    const targetMuscle = state.exercises[idx].t;
+    const pool = library[currentCat].filter(ex => ex.t === targetMuscle && ex.n !== state.exercises[idx].n);
+    if (pool.length > 0) {
+        state.exercises[idx] = {...pool[Math.floor(Math.random() * pool.length)], w:'', s:'', r:''};
+        state.completed = state.completed.filter(i => i !== idx);
+        renderList();
+    }
+};
+
 window.showInfo = (name) => {
     const modal = document.getElementById('infoModal');
-    const img = document.getElementById('modalImg');
+    const data = exerciseData[name] || { tips: "Focus on controlled motion.", img: "" };
     document.getElementById('modalTitle').innerText = name.toUpperCase();
-    img.src = `https://loremflickr.com/400/400/gym,workout,${name.replace(/\s+/g, '')}`;
+    document.getElementById('modalImg').src = data.img;
+    document.getElementById('modalDesc').innerText = data.tips;
     modal.style.display = 'flex';
 };
 
 window.closeModal = () => document.getElementById('infoModal').style.display = 'none';
 
 function clearAllHistory() {
-    if (confirm("Are you sure? This will delete all logged workouts and reset your session progress.")) {
+    if (confirm("Reset everything to Session 1?")) { 
         localStorage.clear();
-        location.reload();
+        initApp();
     }
 }
 
@@ -116,7 +163,7 @@ function getLastStats(name) {
     for (let i = history.length - 1; i >= 0; i--) {
         const found = history[i].exercises.find(ex => ex.n === name);
         if (found) {
-            return found.t === "Cardio" ? `PREV: ${found.dur || 0} mins` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`;
+            return found.t === "Cardio" ? `PREV: ${found.dur || 0}m` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`;
         }
     }
     return "NEW EXERCISE";
@@ -140,9 +187,10 @@ function renderList() {
 
         div.innerHTML = `
             <div class="item-header">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:1.2rem" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span> 
-                    <b style="font-size:1.1rem">${ex.n}</b>
+                <div style="display:flex; align-items:center;">
+                    <span class="icon-btn" onclick="event.stopPropagation(); window.swapEx(${idx})">🔄</span>
+                    <span class="icon-btn" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span> 
+                    <b>${ex.n}</b>
                 </div>
                 <div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div>
             </div>
@@ -173,7 +221,7 @@ function renderHistory() {
             ${dateHeader}
             <div style="color:#888; font-size:0.75rem; margin-bottom:8px;">SESSION: ${entry.cat}</div>
             ${entry.exercises.map(e => {
-                let stats = e.t === "Cardio" ? `${e.dur || 0} mins` : `${e.w || 0}lb | ${e.s || 0}x${e.r || 0}`;
+                let stats = e.t === "Cardio" ? `${e.dur || 0}m` : `${e.w || 0}lb | ${e.s || 0}x${e.r || 0}`;
                 return `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; border-bottom:1px solid #222;">
                     <span>${e.n}</span><span style="color:var(--accent)">${stats}</span>
                 </div>`
@@ -191,23 +239,22 @@ function updateUI() {
     
     if (!state.isStarted) {
         btn.innerText = "START WORKOUT";
+        btn.style.background = "var(--accent)";
     } else if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
-        btn.innerText = "FINISH & SAVE";
+        btn.innerText = "FINISH & SAVE SESSION";
+        btn.style.background = "#fff";
     } else {
-        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
+        btn.innerText = `LOGGING: ${state.completed.length}/${state.exercises.length}`;
+        btn.style.background = "#333";
     }
 }
 
+// --- BUTTON LOGIC ---
 document.getElementById('mainBtn').onclick = function() {
     if (!state.isStarted) {
-        // --- START LOGIC ---
+        // --- START WORKOUT ---
         state.isStarted = true;
-        const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
-        state.dayIdx = savedIdx;
-        const cat = sequence[savedIdx];
-        
-        document.getElementById('catDisplay').innerText = cat.toUpperCase();
-        
+        const cat = sequence[state.dayIdx];
         if (cat === "Cardio") {
             const item = library.Cardio[Math.floor(Math.random() * library.Cardio.length)];
             state.exercises = [{...item}];
@@ -215,36 +262,31 @@ document.getElementById('mainBtn').onclick = function() {
             state.exercises = [...library[cat]].sort(() => 0.5 - Math.random()).slice(0, 6).map(e => ({...e}));
         }
         renderList();
+        window.scrollTo(0,0);
     } else if (state.completed.length === state.exercises.length) {
-        // --- SAVE LOGIC ---
+        // --- SAVE WORKOUT (NO RELOAD) ---
         const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
-        const entry = { 
+        history.push({ 
             date: new Date().toLocaleDateString(), 
             cat: sequence[state.dayIdx], 
-            exercises: JSON.parse(JSON.stringify(state.exercises)) // Deep copy
-        };
-        
-        history.push(entry);
+            exercises: JSON.parse(JSON.stringify(state.exercises)) 
+        });
         localStorage.setItem('arch_history', JSON.stringify(history));
         
-        // Move to next session index
+        // Update Session Index
         const nextIdx = (state.dayIdx + 1) % sequence.length;
-        localStorage.setItem('arch_seq_idx', nextIdx);
+        localStorage.setItem('arch_seq_idx', nextIdx.toString());
         
-        // Fully reset local state to prevent "double save" requirement
-        state.isStarted = false;
-        state.exercises = [];
-        state.completed = [];
-        
-        location.reload(); // Refresh to clean the slate
+        // RESET SCREEN WITHOUT RELOAD
+        initApp();
+        window.scrollTo(0,0);
     }
 };
 
 let timerInt;
 function toggleTimer() {
     if (timerInt) { 
-        clearInterval(timerInt); 
-        timerInt = null; 
+        clearInterval(timerInt); timerInt = null; 
         document.getElementById('timerDisplay').innerText = "01:00";
         document.getElementById('timerBtn').innerText = "START";
         return; 
@@ -255,19 +297,15 @@ function toggleTimer() {
         t--; 
         document.getElementById('timerDisplay').innerText = `00:${t < 10 ? '0' : ''}${t}`;
         if (t <= 0) { 
-            clearInterval(timerInt); 
-            timerInt = null; 
+            clearInterval(timerInt); timerInt = null; 
             document.getElementById('timerDisplay').innerText = "DONE";
             document.getElementById('timerBtn').innerText = "START";
         }
     }, 1000);
 }
 
-window.onload = () => {
-    const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
-    document.getElementById('catDisplay').innerText = sequence[savedIdx].toUpperCase();
-    document.getElementById('sessionLabel').innerText = `READY FOR SESSION ${savedIdx + 1}`;
-};
+// Start the app for the first time
+window.onload = initApp;
 </script>
 </body>
 </html>
