@@ -9,30 +9,24 @@
         body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; padding-bottom: 140px; }
         .container { width: 100%; max-width: 420px; }
         .header-card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid #333; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;}
-        
         .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
         .tab-btn { flex: 1; padding: 12px; background: #222; border: 1px solid #333; color: #888; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
         .tab-btn.active { background: var(--card); color: var(--accent); border: 1px solid var(--accent); }
-        
         .history-item { background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left; }
         .history-date { color: var(--accent); font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; display: block; border-bottom: 1px solid #333; padding-bottom: 5px; }
         .clear-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 12px; border-radius: 10px; font-weight: bold; margin-bottom: 15px; cursor: pointer; width: 100%; border: 1px solid var(--danger); }
-
         .item { background: var(--card); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; margin-top: 8px; cursor: pointer; text-align: left; }
         .item.done { border-color: var(--accent); opacity: 0.4; }
         .item-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
         .last-badge { font-size: 0.65rem; background: #333; color: #00d1b2; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-weight: bold; }
-        
         .log-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
         .log-grid input, .cardio-log { background: #111; border: 1px solid #444; color: var(--accent); padding: 8px; border-radius: 6px; font-size: 0.8rem; width: 100%; box-sizing: border-box; outline: none; }
         .cardio-log { margin-top: 8px; text-align: center; font-weight: bold; }
-
         .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
         .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; border: 1px solid #333; }
         .modal-img-wrap { width: 100%; height: 200px; background: #000; border-radius: 12px; margin-bottom: 15px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
         .modal-img { width: 100%; height: 100%; object-fit: contain; }
         .modal-text { color: #aaa; font-size: 0.8rem; line-height: 1.4; text-align: left; margin-bottom: 15px; background: #222; padding: 10px; border-radius: 8px; }
-        
         .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; z-index: 100; }
         #timerDisplay { font-size: 2rem; font-weight: bold; color: var(--accent); font-family: monospace; }
         #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; width: 100%; font-size: 1rem; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
@@ -80,61 +74,70 @@
 </div>
 
 <script>
-// --- EXTENDED LOW-IMPACT LIBRARY ---
 const exerciseData = {
-    // CHEST (LOW IMPACT PULLEYS/MACHINES)
-    "Cable Chest Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-chest-fly.gif", tips: "CHEST (MID): Focus on the squeeze. Keep a slight bend in the elbows. Low impact on joints." },
-    "High-to-Low Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/high-to-low-cable-fly.gif", tips: "CHEST (LOWER): Cables set high. Pull down and across. Targets lower chest fibers." },
-    "Low-to-High Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/low-to-high-cable-fly.gif", tips: "CHEST (UPPER): Cables set low. Scoop upward. Great low-impact upper chest builder." },
-    "Pushups": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/push-up.gif", tips: "CHEST: Use handles if wrists hurt. Body straight, controlled tempo." },
-
-    // SHOULDERS (SPECIFIC PLANES)
-    "Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif", tips: "SHOULDERS (SIDE): Lead with elbows. Tilt thumbs down slightly. Targets side delts." },
-    "Cable Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-lateral-raise.gif", tips: "SHOULDERS (SIDE): Constant cable tension. Very smooth on the shoulder joint." },
-    "Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-front-raise.gif", tips: "SHOULDERS (FRONT): Lift to eye level. Don't swing. Targets front delts." },
-    "Cable Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-front-raise.gif", tips: "SHOULDERS (FRONT): Continuous pulley tension. Control the descent." },
-    "Rear Delt Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-rear-delt-row.gif", tips: "SHOULDERS (REAR): Hinge forward. Fly weights out. Squeeze back of shoulders." },
-    "Face Pulls": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/face-pull.gif", tips: "SHOULDERS (REAR/POSTURE): Pull rope to forehead. Pull ends apart. Essential for joint health." },
-
-    // BACK (CABLES/MACHINES)
-    "Lat Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lat-pulldown.gif", tips: "BACK (WIDTH): Pull to upper chest. Keep chest up. Don't use momentum." },
-    "Seated Cable Rows": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/seated-cable-row.gif", tips: "BACK (THICKNESS): Pull handle to stomach. Squeeze shoulder blades." },
-    "Straight Arm Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/straight-arm-pulldown.gif", tips: "BACK (LATS): Pull bar to thighs with straight arms. Isolates lats without bicep strain." },
-
-    // LEGS (STABLE/CONTROLLED)
-    "Goblet Squats": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/goblet-squat.gif", tips: "LEGS: Counterbalance with weight at chest. Easier on the back than bar squats." },
-    "Cable Pull Throughs": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-pull-through.gif", tips: "LEGS (HAMSTRINGS/GLUTES): Hinge at hips. Pull cable through legs. Low spine load." },
-    "Leg Press": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/leg-press.gif", tips: "LEGS: Maximum stability. Don't lock knees at the top." }
+    "Flat Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-chest-fly.gif", tips: "CHEST: Focus on the squeeze. Keep a slight bend in elbows." },
+    "Incline Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/low-to-high-cable-fly.gif", tips: "UPPER CHEST: Scoop cables upward to eye level." },
+    "High-to-Low Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/high-to-low-cable-fly.gif", tips: "LOWER CHEST: Pull down and across toward hips." },
+    "Dumbbell Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif", tips: "SIDE DELT: Lead with elbows. Tilt thumbs down at top." },
+    "Cable Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-lateral-raise.gif", tips: "SIDE DELT: Constant tension. Lean slightly away from pulley." },
+    "Dumbbell Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-front-raise.gif", tips: "FRONT DELT: Raise to shoulder height. Control the descent." },
+    "Cable Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-front-raise.gif", tips: "FRONT DELT: Pull cable from between legs for constant load." },
+    "Face Pulls": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/face-pull.gif", tips: "POSTURE: Pull rope to forehead, pulling ends apart." },
+    "Lat Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lat-pulldown.gif", tips: "BACK: Pull to upper chest. Think elbows to hips." },
+    "Seated Cable Rows": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/seated-cable-row.gif", tips: "BACK: Neutral spine. Squeeze shoulder blades." },
+    "Straight Arm Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/straight-arm-pulldown.gif", tips: "LATS: Keep arms straight. Pull bar to thighs." },
+    "Goblet Squats": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/goblet-squat.gif", tips: "LEGS: Weight at chest. Sit back. Low back safe." },
+    "Cable Pull Throughs": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-pull-through.gif", tips: "GLUTES/HAMS: Hinge at hips. Pull through legs." },
+    "Leg Press": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/leg-press.gif", tips: "LEGS: Stable platform. Don't lock knees." },
+    "Stationary Bike": { img: "", tips: "CARDIO: Maintain a steady RPM." },
+    "Stairmaster": { img: "", tips: "CARDIO: Focus on steady, deep steps." },
+    "Walking Hike": { img: "", tips: "CARDIO: Incline walking for heart health." }
 };
 
 const library = {
     "Push": [
-        {n:"Cable Chest Flys", t:"Chest"}, {n:"High-to-Low Flys", t:"Chest"}, {n:"Low-to-High Flys", t:"Chest"}, {n:"Pushups", t:"Chest"},
-        {n:"Cable Lateral Raises", t:"Shoulders"}, {n:"Side Lateral Raises", t:"Shoulders"}, {n:"Cable Front Raises", t:"Shoulders"}, {n:"Front Raises", t:"Shoulders"},
-        {n:"Goblet Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}
+        {n:"Flat Cable Flys", t:"Chest"}, {n:"Incline Cable Flys", t:"Chest"}, {n:"High-to-Low Flys", t:"Chest"},
+        {n:"Dumbbell Side Lateral Raises", t:"Shoulders"}, {n:"Cable Side Lateral Raises", t:"Shoulders"},
+        {n:"Dumbbell Front Raises", t:"Shoulders"}, {n:"Cable Front Raises", t:"Shoulders"}
     ],
     "Pull": [
-        {n:"Lat Pulldowns", t:"Back"}, {n:"Seated Cable Rows", t:"Back"}, {n:"Straight Arm Pulldowns", t:"Back"}, {n:"Face Pulls", t:"Shoulders"},
-        {n:"Rear Delt Flys", t:"Shoulders"}, {n:"Bicep Curls", t:"Arms"}, {n:"Cable Hammer Curls", t:"Arms"}
+        {n:"Lat Pulldowns", t:"Back"}, {n:"Seated Cable Rows", t:"Back"}, {n:"Straight Arm Pulldowns", t:"Back"},
+        {n:"Face Pulls", t:"Shoulders"}
+    ],
+    "Upper": [
+        {n:"Incline Cable Flys", t:"Chest"}, {n:"Lat Pulldowns", t:"Back"}, 
+        {n:"Cable Side Lateral Raises", t:"Shoulders"}, {n:"Seated Cable Rows", t:"Back"},
+        {n:"Flat Cable Flys", t:"Chest"}, {n:"Face Pulls", t:"Shoulders"}
     ],
     "Lower": [
-        {n:"Cable Pull Throughs", t:"Legs"}, {n:"DB Romanian Deadlifts", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"Leg Press", t:"Legs"}, {n:"Calf Raises", t:"Legs"}
+        {n:"Goblet Squats", t:"Legs"}, {n:"Cable Pull Throughs", t:"Legs"}, {n:"Leg Press", t:"Legs"}
     ],
     "Cardio": [{n:"Stationary Bike", t:"Cardio"}, {n:"Stairmaster", t:"Cardio"}, {n:"Walking Hike", t:"Cardio"}]
 };
 
-const sequence = ["Push", "Cardio", "Pull", "Cardio", "Lower"];
+const sequence = ["Push", "Cardio", "Pull", "Cardio", "Upper", "Lower", "Rest"];
 let state = { dayIdx: 0, exercises: [], completed: [], isStarted: false };
 
 function initApp() {
     state.dayIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
-    document.getElementById('catDisplay').innerText = sequence[state.dayIdx].toUpperCase();
-    document.getElementById('sessionLabel').innerText = `SESSION ${state.dayIdx + 1} READY`;
-    document.getElementById('list').innerHTML = "";
-    document.getElementById('progressWrapper').style.display = 'none';
+    const currentCat = sequence[state.dayIdx];
     state.isStarted = false;
     state.completed = [];
     state.exercises = [];
+    
+    document.getElementById('catDisplay').innerText = currentCat.toUpperCase();
+    document.getElementById('sessionLabel').innerText = `SESSION ${state.dayIdx + 1} READY`;
+    document.getElementById('list').innerHTML = "";
+    document.getElementById('progressWrapper').style.display = 'none';
+    
+    const mainBtn = document.getElementById('mainBtn');
+    if (currentCat === "Rest") {
+        mainBtn.innerText = "COMPLETE REST DAY";
+        document.getElementById('list').innerHTML = `<div class="header-card" style="margin-top:20px; color:#888;"><p>RECOVERY MODE</p><p style="font-size:0.8rem;">Focus on sleep and hydration today.</p></div>`;
+    } else {
+        mainBtn.innerText = "START WORKOUT";
+        mainBtn.style.background = "var(--accent)";
+    }
     updateUI();
 }
 
@@ -144,6 +147,79 @@ function switchTab(tab) {
     document.getElementById('tabWorkout').classList.toggle('active', tab === 'workout');
     document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
     if(tab === 'history') renderHistory();
+}
+
+function updateUI() {
+    const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + "%";
+    document.getElementById('progressWrapper').style.display = state.isStarted ? 'block' : 'none';
+    const btn = document.getElementById('mainBtn');
+    
+    if (sequence[state.dayIdx] === "Rest") return;
+
+    if (!state.isStarted) {
+        btn.innerText = "START WORKOUT";
+        btn.style.background = "var(--accent)";
+    } else if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
+        btn.innerText = "FINISH & SAVE";
+        btn.style.background = "#fff";
+    } else {
+        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
+        btn.style.background = "#333";
+    }
+}
+
+document.getElementById('mainBtn').onclick = function() {
+    const currentCat = sequence[state.dayIdx];
+    
+    if (currentCat === "Rest") {
+        localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % sequence.length);
+        initApp();
+        return;
+    }
+
+    if (!state.isStarted) {
+        state.isStarted = true;
+        if (currentCat === "Cardio") {
+            state.exercises = [{...library.Cardio[Math.floor(Math.random() * library.Cardio.length)]}];
+        } else {
+            state.exercises = [...library[currentCat]].sort(() => 0.5 - Math.random()).slice(0, 6).map(e => ({...e}));
+        }
+        renderList();
+        updateUI();
+    } else if (state.completed.length === state.exercises.length) {
+        const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
+        history.push({ date: new Date().toLocaleDateString(), cat: currentCat, exercises: JSON.parse(JSON.stringify(state.exercises)) });
+        localStorage.setItem('arch_history', JSON.stringify(history));
+        localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % sequence.length);
+        initApp();
+    }
+};
+
+function renderList() {
+    const container = document.getElementById('list');
+    container.innerHTML = "";
+    state.exercises.forEach((ex, idx) => {
+        const isDone = state.completed.includes(idx);
+        const last = getLastStats(ex.n);
+        const logUI = ex.t === "Cardio" 
+            ? `<input type="number" class="cardio-log" placeholder="${last ? last.summary : 'Minutes'}" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
+            : `<div class="log-grid" onclick="event.stopPropagation()">
+                <div><label style="font-size:0.5rem;color:#555">LB</label><input type="text" placeholder="${last ? last.w : '0'}" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value"></div>
+                <div><label style="font-size:0.5rem;color:#555">SET</label><input type="number" placeholder="${last ? last.s : '0'}" value="${ex.s || ''}" oninput="state.exercises[${idx}].s = this.value"></div>
+                <div><label style="font-size:0.5rem;color:#555">REP</label><input type="number" placeholder="${last ? last.r : '0'}" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value"></div>
+               </div>`;
+
+        const div = document.createElement('div');
+        div.className = `item ${isDone ? 'done' : ''}`;
+        div.innerHTML = `<div class="item-header"><div style="display:flex; align-items:center;"><span class="icon-btn" onclick="event.stopPropagation(); window.swapEx(${idx})">🔄</span><span class="icon-btn" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span><b>${ex.n}</b></div><div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div></div><div class="last-badge">${last ? last.summary : 'FIRST TIME'}</div>${logUI}`;
+        div.onclick = () => {
+            if (isDone) state.completed = state.completed.filter(i => i !== idx);
+            else state.completed.push(idx);
+            renderList();
+        };
+        container.appendChild(div);
+    });
 }
 
 window.swapEx = (idx) => {
@@ -159,7 +235,7 @@ window.swapEx = (idx) => {
 
 window.showInfo = (name) => {
     const modal = document.getElementById('infoModal');
-    const data = exerciseData[name] || { tips: "Maintain controlled motion and focus on muscle tension.", img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif" };
+    const data = exerciseData[name] || { tips: "Controlled motion.", img: "" };
     document.getElementById('modalTitle').innerText = name.toUpperCase();
     document.getElementById('modalImg').src = data.img;
     document.getElementById('modalDesc').innerText = data.tips;
@@ -168,155 +244,37 @@ window.showInfo = (name) => {
 
 window.closeModal = () => document.getElementById('infoModal').style.display = 'none';
 
-function clearAllHistory() {
-    if (confirm("Reset to Session 1 and delete all history?")) { 
-        localStorage.clear();
-        initApp();
-    }
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
+    const container = document.getElementById('historyList');
+    container.innerHTML = history.length ? "" : "<p style='text-align:center; color:#666;'>No history.</p>";
+    history.slice().reverse().forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `<span class="history-date">${entry.date}</span><div style="color:#888; font-size:0.75rem; margin-bottom:8px;">${entry.cat}</div>
+            ${entry.exercises.map(e => `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; border-bottom:1px solid #222;"><span>${e.n}</span><span style="color:var(--accent)">${e.t === "Cardio" ? (e.dur || 0)+'m' : (e.w || 0)+'lb | '+(e.s || 0)+'x'+(e.r || 0)}</span></div>`).join('')}`;
+        container.appendChild(div);
+    });
 }
 
 function getLastStats(name) {
     const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
     for (let i = history.length - 1; i >= 0; i--) {
         const found = history[i].exercises.find(ex => ex.n === name);
-        if (found) {
-            return {
-                summary: found.t === "Cardio" ? `PREV: ${found.dur || 0}m` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`,
-                w: found.w || "",
-                s: found.s || "",
-                r: found.r || ""
-            };
-        }
+        if (found) return { summary: found.t === "Cardio" ? `PREV: ${found.dur || 0}m` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`, w: found.w || "", s: found.s || "", r: found.r || "" };
     }
     return null;
 }
 
-function renderList() {
-    const container = document.getElementById('list');
-    container.innerHTML = "";
-    state.exercises.forEach((ex, idx) => {
-        const isDone = state.completed.includes(idx);
-        const last = getLastStats(ex.n);
-        
-        const div = document.createElement('div');
-        div.className = `item ${isDone ? 'done' : ''}`;
-        
-        let logUI = ex.t === "Cardio" 
-            ? `<input type="number" class="cardio-log" placeholder="${last ? last.summary : 'Enter Minutes'}" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
-            : `<div class="log-grid" onclick="event.stopPropagation()">
-                <div><label style="font-size:0.5rem;color:#555">LB</label><input type="text" placeholder="${last ? last.w : '0'}" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value"></div>
-                <div><label style="font-size:0.5rem;color:#555">SET</label><input type="number" placeholder="${last ? last.s : '0'}" value="${ex.s || ''}" oninput="state.exercises[${idx}].s = this.value"></div>
-                <div><label style="font-size:0.5rem;color:#555">REP</label><input type="number" placeholder="${last ? last.r : '0'}" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value"></div>
-               </div>`;
-
-        div.innerHTML = `
-            <div class="item-header">
-                <div style="display:flex; align-items:center;">
-                    <span class="icon-btn" onclick="event.stopPropagation(); window.swapEx(${idx})">🔄</span>
-                    <span class="icon-btn" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span> 
-                    <b>${ex.n}</b>
-                </div>
-                <div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div>
-            </div>
-            <div class="last-badge">${last ? last.summary : 'FIRST TIME'}</div>
-            ${logUI}
-        `;
-        div.onclick = () => {
-            if (isDone) state.completed = state.completed.filter(i => i !== idx);
-            else state.completed.push(idx);
-            renderList();
-        };
-        container.appendChild(div);
-    });
-    updateUI();
-}
-
-function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
-    const container = document.getElementById('historyList');
-    container.innerHTML = history.length ? "" : "<p style='text-align:center; color:#666;'>No history found.</p>";
-    let lastDate = "";
-    history.slice().reverse().forEach(entry => {
-        const dateHeader = entry.date !== lastDate ? `<span class="history-date">${entry.date}</span>` : "";
-        lastDate = entry.date;
-        const div = document.createElement('div');
-        div.className = 'history-item';
-        div.innerHTML = `
-            ${dateHeader}
-            <div style="color:#888; font-size:0.75rem; margin-bottom:8px;">SESSION: ${entry.cat}</div>
-            ${entry.exercises.map(e => {
-                let stats = e.t === "Cardio" ? `${e.dur || 0}m` : `${e.w || 0}lb | ${e.s || 0}x${e.r || 0}`;
-                return `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; border-bottom:1px solid #222;">
-                    <span>${e.n}</span><span style="color:var(--accent)">${stats}</span>
-                </div>`
-            }).join('')}
-        `;
-        container.appendChild(div);
-    });
-}
-
-function updateUI() {
-    const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
-    document.getElementById('progressBar').style.width = progress + "%";
-    document.getElementById('progressWrapper').style.display = state.isStarted ? 'block' : 'none';
-    const btn = document.getElementById('mainBtn');
-    
-    if (!state.isStarted) {
-        btn.innerText = "START WORKOUT";
-        btn.style.background = "var(--accent)";
-    } else if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
-        btn.innerText = "FINISH & SAVE SESSION";
-        btn.style.background = "#fff";
-    } else {
-        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
-        btn.style.background = "#333";
-    }
-}
-
-document.getElementById('mainBtn').onclick = function() {
-    if (!state.isStarted) {
-        state.isStarted = true;
-        const cat = sequence[state.dayIdx];
-        if (cat === "Cardio") {
-            const item = library.Cardio[Math.floor(Math.random() * library.Cardio.length)];
-            state.exercises = [{...item}];
-        } else {
-            state.exercises = [...library[cat]].sort(() => 0.5 - Math.random()).slice(0, 6).map(e => ({...e}));
-        }
-        renderList();
-        window.scrollTo(0,0);
-    } else if (state.completed.length === state.exercises.length) {
-        const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
-        history.push({ 
-            date: new Date().toLocaleDateString(), 
-            cat: sequence[state.dayIdx], 
-            exercises: JSON.parse(JSON.stringify(state.exercises)) 
-        });
-        localStorage.setItem('arch_history', JSON.stringify(history));
-        localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % sequence.length);
-        initApp();
-        window.scrollTo(0,0);
-    }
-};
+function clearAllHistory() { if (confirm("Reset everything?")) { localStorage.clear(); initApp(); } }
 
 let timerInt;
 function toggleTimer() {
-    if (timerInt) { 
-        clearInterval(timerInt); timerInt = null; 
-        document.getElementById('timerDisplay').innerText = "01:00";
-        document.getElementById('timerBtn').innerText = "START";
-        return; 
-    }
-    let t = 60;
-    document.getElementById('timerBtn').innerText = "RESET";
+    if (timerInt) { clearInterval(timerInt); timerInt = null; document.getElementById('timerDisplay').innerText = "01:00"; document.getElementById('timerBtn').innerText = "START"; return; }
+    let t = 60; document.getElementById('timerBtn').innerText = "RESET";
     timerInt = setInterval(() => {
-        t--; 
-        document.getElementById('timerDisplay').innerText = `00:${t < 10 ? '0' : ''}${t}`;
-        if (t <= 0) { 
-            clearInterval(timerInt); timerInt = null; 
-            document.getElementById('timerDisplay').innerText = "DONE";
-            document.getElementById('timerBtn').innerText = "START";
-        }
+        t--; document.getElementById('timerDisplay').innerText = `00:${t < 10 ? '0' : ''}${t}`;
+        if (t <= 0) { clearInterval(timerInt); timerInt = null; document.getElementById('timerDisplay').innerText = "DONE"; document.getElementById('timerBtn').innerText = "START"; }
     }, 1000);
 }
 
