@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Architect Pro: Elite 60</title>
+
+  <!-- PWA / Home-screen -->
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Architect Pro">
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    :root { --accent: #00d1b2; --bg: #0f0f0f; --card: #1a1a1a; --text: #e0e0e0; --superset: #7d5fff; }
+    html,body { height:100%; }
+    body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; padding-bottom: 140px; }
+    .container { width: 100%; max-width: 420px; }
+    .header-card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid #333; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;}
+    .superset-block { border: 2px solid var(--superset); border-radius: 16px; padding: 10px; margin-top: 15px; position: relative; background: rgba(125, 95, 255, 0.05); }
+    .superset-badge { position: absolute; top: -10px; left: 20px; background: var(--superset); color: white; font-size: 0.6rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; }
+    .item { background: var(--card); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; margin-top: 8px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
+    .item.done { border-color: var(--accent); opacity: 0.45; }
+    .item-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
+    .goal-tag { font-size: 0.7rem; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.2; }
+    .muscle-tag { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
+    input { background: #111; border: 1px solid #444; color: var(--accent); padding: 10px; border-radius: 8px; font-size: 0.85rem; width: 110px; margin-top: 5px; outline: none; }
+    .progress-container { height: 6px; width: 100%; background: #333; margin: 15px 0; border-radius: 3px; }
+    #progressBar { height: 100%; width: 0%; background: var(--accent); transition: width 0.3s ease; }
+    .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
+    #timerDisplay { font-family: 'Courier New', monospace; font-size: 2rem; font-weight: bold; color: var(--accent); }
+    #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; width: 100%; font-size: 1rem; text-transform: uppercase; }
+    .timer-btn { width: auto; padding: 12px 24px; background: #333; color: white; border-radius: 10px; border: none; font-weight: bold; }
+    .swap-icon { color: #555; font-size: 1rem; margin-right: 6px; }
+    .swap-btn { background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; }
+    .sr-only { position: absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header-card" role="region" aria-label="Workout header">
+      <div id="sessionLabel" style="color: #666; font-size: 0.7rem; letter-spacing: 2px; font-weight: bold;">TRAINING SEQUENCE</div>
+      <div id="catDisplay" style="font-size: 1.8rem; font-weight: 900; color: var(--accent); margin: 10px 0;">READY</div>
+      <div class="progress-container" aria-hidden="true"><div id="progressBar"></div></div>
+      <button id="mainBtn" aria-live="polite">START WORKOUT</button>
+    </div>
+    <div id="list" aria-live="polite"></div>
+  </div>
+
+  <div class="timer-bar" role="region" aria-label="Rest timer">
+    <div>
+      <div style="font-size: 0.6rem; color: #666; font-weight: bold;">REST TIMER</div>
+      <div id="timerDisplay">01:00</div>
+    </div>
+    <button id="timerBtn" class="timer-btn">START</button>
+  </div>
+
+<script>
+/* Data library */
+const library = {
+  "Push": [
+    {n:"DB Bench Press", t:"Chest", bw: false}, {n:"Incline DB Press", t:"Chest", bw: false}, {n:"Pushups", t:"Chest", bw: true}, {n:"DB Flyes", t:"Chest", bw: false},
+    {n:"DB Overhead Press", t:"Shoulders", bw: false}, {n:"Arnold Press", t:"Shoulders", bw: false}, {n:"Lateral Raises", t:"Shoulders", bw: false},
+    {n:"DB Goblet Squats", t:"Legs", bw: false}, {n:"Bulgarian Split Squats", t:"Legs", bw: false}, {n:"Step Ups", t:"Legs", bw: false},
+    {n:"Dips", t:"Arms", bw: true}, {n:"Tricep Pushdowns", t:"Arms", bw: false}
+  ],
+  "Pull": [
+    {n:"One-Arm DB Rows", t:"Back", bw: false}, {n:"Weighted Pullups", t:"Back", bw: true}, {n:"Chest Supported Rows", t:"Back", bw: false}, {n:"Renegade Rows", t:"Back", bw: false},
+    {n:"DB Hammer Curls", t:"Arms", bw: false}, {n:"Bicep Curls", t:"Arms", bw: false}, {n:"Preacher Curls", t:"Arms", bw: false},
+    {n:"Face Pulls", t:"Shoulders", bw: false}, {n:"Rear Delt Flyes", t:"Shoulders", bw: false}
+  ],
+  "Lower": [
+    {n:"DB Romanian Deadlifts", t:"Legs", bw: false}, {n:"KB Swings", t:"Legs", bw: false}, {n:"DB Sumos", t:"Legs", bw: false},
+    {n:"Goblet Squats", t:"Legs", bw: false}, {n:"DB Lunges", t:"Legs", bw: false}, {n:"Calf Raises", t:"Legs", bw: false}
+  ],
+  "Cardio": ["Indoor Treadmill Run", "Treadmill Hike", "Outdoor Walk", "Stationary Bike"]
+};
+
+const sequence = ["Push", "Cardio", "Pull", "Cardio", "Lower"];
+let state = { dayIdx: 0, exercises: [], completed: [], isStarted: false };
+
+/* Helpers */
+const getGoal = (target) => {
+  if (target === "Chest" || target === "Legs") return "4-5 Sets\\n12-15 Reps";
+  return "3-4 Sets\\n10-12 Reps";
+};
+
+function swapEx(idx) {
+  const currentCat = sequence[state.dayIdx];
+  if (currentCat === "Cardio") {
+    const otherOptions = library.Cardio.filter(c => c !== state.exercises[idx].n);
+    state.exercises[idx].n = otherOptions[Math.floor(Math.random() * otherOptions.length)];
+  } else {
+    const targetMuscle = state.exercises[idx].t;
+    const pool = library[currentCat].filter(ex => ex.t === targetMuscle && ex.n !== state.exercises[idx].n);
+    if (pool.length > 0) state.exercises[idx] = pool[Math.floor(Math.random() * pool.length)];
+  }
+  renderList();
+}
+
+function generateWorkout() {
+  state.isStarted = true;
+  const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
+  const lastFinish = localStorage.getItem('arch_last_finish');
+  state.dayIdx = savedIdx;
+
+  const hoursSinceLast = lastFinish ? (Date.now() - parseInt(lastFinish)) / 3600000 : 99;
+  const isRested = hoursSinceLast > 24;
+
+  const currentCat = sequence[savedIdx];
+  document.getElementById('catDisplay').innerText = currentCat.toUpperCase();
+  state.exercises = [];
+  state.completed = [];
+
+  if (currentCat === "Cardio") {
+    const prevIdx = (savedIdx + 4) % 5;
+    let name;
+    if ((sequence[prevIdx] === "Push" || sequence[prevIdx] === "Lower") && !isRested) {
+      name = "Stationary Bike";
+    } else {
+      name = library.Cardio[Math.floor(Math.random() * library.Cardio.length)];
+    }
+    state.exercises.push({n: name, t: "Cardio", bw: true});
+  } else {
+    const pool = [...library[currentCat]].sort(() => 0.5 - Math.random());
+    state.exercises = pool.slice(0, 6).map(e => ({...e}));
+  }
+  renderList();
+}
+
+/* Render and DOM events (no inline handlers) */
+function renderList() {
+  const container = document.getElementById('list');
+  container.innerHTML = "";
+
+  state.exercises.forEach((ex, idx) => {
+    const isDone = state.completed.includes(idx);
+
+    if (idx === 2 && state.exercises.length > 1) {
+      const block = document.createElement('div');
+      block.className = 'superset-block';
+      block.id = 'superset-wrap';
+      block.innerHTML = '<div class="superset-badge">SUPERSET</div>';
+      container.appendChild(block);
+    }
+
+    const div = document.createElement('div');
+    div.className = `item ${isDone ? 'done' : ''}`;
+    div.setAttribute('data-idx', idx);
+
+    const header = document.createElement('div');
+    header.className = 'item-header';
+
+    const left = document.createElement('div');
+    const swapBtn = document.createElement('button');
+    swapBtn.className = 'swap-btn';
+    swapBtn.setAttribute('aria-label', 'Swap exercise');
+    swapBtn.dataset.idx = idx;
+    swapBtn.innerHTML = '<span class="swap-icon">🔄</span><b>' + ex.n + '</b>';
+    left.appendChild(swapBtn);
+
+    const goal = document.createElement('div');
+    goal.className = 'goal-tag';
+    goal.innerHTML = ex.t === 'Cardio' ? '30 Mins<br>Zone 2' : getGoal(ex.t).replace('\\n','<br>');
+
+    header.appendChild(left);
+    header.appendChild(goal);
+
+    const muscle = document.createElement('span');
+    muscle.className = 'muscle-tag';
+    muscle.innerText = ex.t;
+
+    div.appendChild(header);
+    div.appendChild(muscle);
+
+    if (!ex.bw) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Weight';
+      input.dataset.idx = idx;
+      const savedWeights = JSON.parse(localStorage.getItem('arch_weights') || '{}');
+      if (savedWeights[state.dayIdx] && savedWeights[state.dayIdx][idx]) input.value = savedWeights[state.dayIdx][idx];
+      div.appendChild(input);
+      input.addEventListener('click', e => e.stopPropagation());
+      input.addEventListener('input', (e) => {
+        const weights = JSON.parse(localStorage.getItem('arch_weights') || '{}');
+        weights[state.dayIdx] = weights[state.dayIdx] || {};
+        weights[state.dayIdx][idx] = e.target.value;
+        localStorage.setItem('arch_weights', JSON.stringify(weights));
+      });
+    }
+
+    div.addEventListener('click', () => {
+      if (isDone) state.completed = state.completed.filter(i => i !== idx);
+      else state.completed.push(idx);
+      renderList();
+    });
+
+    // swap action
+    swapBtn.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      swapEx(idx);
+    });
+
+    if ((idx === 2 || idx === 3) && document.getElementById('superset-wrap')) {
+      document.getElementById('superset-wrap').appendChild(div);
+    } else {
+      container.appendChild(div);
+    }
+  });
+
+  updateUI();
+}
+
+function updateUI() {
+  const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
+  document.getElementById('progressBar').style.width = progress + "%";
+  const btn = document.getElementById('mainBtn');
+
+  if (!state.isStarted) {
+    btn.innerText = "START WORKOUT";
+    btn.style.background = "#00d1b2";
+  } else if (progress === 100 && state.exercises.length>0) {
+    btn.innerText = "FINISH & SAVE";
+    btn.style.background = "#00d1b2";
+  } else {
+    btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
+    btn.style.background = "#333";
+  }
+}
+
+/* Timer with persistence while open (not across reloads) */
+let timerInt;
+let remaining = 60;
+const timerBtn = document.getElementById('timerBtn');
+const timerDisplay = document.getElementById('timerDisplay');
+
+timerBtn.addEventListener('click', function() {
+  if (timerInt) { clearInterval(timerInt); timerInt = null; remaining = 60; timerDisplay.innerText = "01:00"; this.innerText = "START"; return; }
+  let time = remaining;
+  this.innerText = "STOP";
+  timerDisplay.innerText = `00:${time<10 ? '0':''}${time}`;
+  timerInt = setInterval(() => {
+    time--;
+    remaining = time;
+    timerDisplay.innerText = time >= 0 ? `00:${time < 10 ? '0' : ''}${time}` : "DONE";
+    if (time <= 0) {
+      clearInterval(timerInt); timerInt = null; remaining = 60; timerDisplay.innerText = "DONE"; timerBtn.innerText = "START";
+      // small vibration if supported
+      if (navigator.vibrate) navigator.vibrate([200,100,200]);
+    }
+  }, 1000);
+});
+
+/* Main button */
+document.getElementById('mainBtn').addEventListener('click', function() {
+  if (!state.isStarted) {
+    generateWorkout();
+  } else if (state.completed.length === state.exercises.length && state.exercises.length>0) {
+    localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % 5);
+    localStorage.setItem('arch_last_finish', Date.now().toString());
+    state.isStarted = false;
+    state.exercises = [];
+    state.completed = [];
+    const savedIdx = parseInt(localStorage.getItem('arch_seq_idx'));
+    document.getElementById('sessionLabel').innerText = `NEXT: SESSION ${savedIdx + 1}`;
+    document.getElementById('catDisplay').innerText = sequence[savedIdx].toUpperCase();
+    document.getElementById('list').innerHTML = "";
+    updateUI();
+    window.scrollTo(0,0);
+  }
+});
+
+/* load */
+window.addEventListener('load', () => {
+  const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
+  document.getElementById('sessionLabel').innerText = `NEXT: SESSION ${savedIdx + 1}`;
+  document.getElementById('catDisplay').innerText = sequence[savedIdx].toUpperCase();
+  updateUI();
+});
+</script>
+</body>
+</html>
