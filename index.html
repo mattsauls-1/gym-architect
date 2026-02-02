@@ -1,284 +1,273 @@
-<!doctype html>
+<html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Architect Pro: Elite 60</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Architect Pro: Elite 60</title>
+    <style>
+        :root { --accent: #00d1b2; --bg: #0f0f0f; --card: #1a1a1a; --text: #e0e0e0; --superset: #7d5fff; --danger: #ff4757; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; padding-bottom: 140px; }
+        .container { width: 100%; max-width: 420px; }
+        .header-card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid #333; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;}
+        
+        .tab-nav { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
+        .tab-btn { flex: 1; padding: 12px; background: #222; border: 1px solid #333; color: #888; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; }
+        .tab-btn.active { background: var(--card); color: var(--accent); border: 1px solid var(--accent); }
+        
+        .history-item { background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 15px; margin-bottom: 10px; text-align: left; }
+        .history-date { color: var(--accent); font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; display: block; border-bottom: 1px solid #333; padding-bottom: 5px; }
+        .clear-btn { background: none; border: 1px solid var(--danger); color: var(--danger); padding: 8px 16px; border-radius: 8px; font-size: 0.7rem; font-weight: bold; margin-bottom: 15px; cursor: pointer; width: 100%; }
 
-  <!-- PWA / Home-screen -->
-  <meta name="theme-color" content="#0f0f0f">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Architect Pro">
-  <link rel="manifest" href="manifest.json">
+        .item { background: var(--card); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; margin-top: 8px; cursor: pointer; text-align: left; }
+        .item.done { border-color: var(--accent); opacity: 0.4; }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .last-badge { font-size: 0.65rem; background: #333; color: #00d1b2; padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block; font-weight: bold; }
+        
+        .log-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 10px; }
+        .log-grid input, .cardio-log { background: #111; border: 1px solid #444; color: var(--accent); padding: 8px; border-radius: 6px; font-size: 0.8rem; width: 100%; box-sizing: border-box; outline: none; }
+        .cardio-log { margin-top: 8px; text-align: center; font-weight: bold; }
 
-  <style>
-    :root { --accent: #00d1b2; --bg: #0f0f0f; --card: #1a1a1a; --text: #e0e0e0; --superset: #7d5fff; }
-    html,body { height:100%; }
-    body { font-family: -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; padding-bottom: 140px; }
-    .container { width: 100%; max-width: 420px; }
-    .header-card { background: var(--card); border-radius: 20px; padding: 24px; border: 1px solid #333; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center;}
-    .superset-block { border: 2px solid var(--superset); border-radius: 16px; padding: 10px; margin-top: 15px; position: relative; background: rgba(125, 95, 255, 0.05); }
-    .superset-badge { position: absolute; top: -10px; left: 20px; background: var(--superset); color: white; font-size: 0.6rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; }
-    .item { background: var(--card); padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; margin-top: 8px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
-    .item.done { border-color: var(--accent); opacity: 0.45; }
-    .item-header { display: flex; justify-content: space-between; align-items: flex-start; width: 100%; }
-    .goal-tag { font-size: 0.7rem; color: var(--accent); font-weight: bold; text-align: right; line-height: 1.2; }
-    .muscle-tag { font-size: 0.6rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
-    input { background: #111; border: 1px solid #444; color: var(--accent); padding: 10px; border-radius: 8px; font-size: 0.85rem; width: 110px; margin-top: 5px; outline: none; }
-    .progress-container { height: 6px; width: 100%; background: #333; margin: 15px 0; border-radius: 3px; }
-    #progressBar { height: 100%; width: 0%; background: var(--accent); transition: width 0.3s ease; }
-    .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; z-index: 100; box-shadow: 0 -5px 20px rgba(0,0,0,0.5); }
-    #timerDisplay { font-family: 'Courier New', monospace; font-size: 2rem; font-weight: bold; color: var(--accent); }
-    #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; cursor: pointer; width: 100%; font-size: 1rem; text-transform: uppercase; }
-    .timer-btn { width: auto; padding: 12px 24px; background: #333; color: white; border-radius: 10px; border: none; font-weight: bold; }
-    .swap-icon { color: #555; font-size: 1rem; margin-right: 6px; }
-    .swap-btn { background: transparent; border: none; color: var(--text); cursor: pointer; padding: 0; }
-    .sr-only { position: absolute; left:-10000px; top:auto; width:1px; height:1px; overflow:hidden; }
-  </style>
+        .modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); align-items: center; justify-content: center; }
+        .modal-content { background: var(--card); padding: 20px; border-radius: 20px; width: 90%; max-width: 380px; text-align: center; border: 1px solid #333; }
+        .modal-img { width: 100%; border-radius: 12px; margin-bottom: 15px; background: #000; min-height: 200px; object-fit: cover; }
+        
+        .timer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: #1a1a1a; padding: 20px; display: flex; align-items: center; justify-content: space-between; border-top: 2px solid #333; z-index: 100; }
+        #timerDisplay { font-size: 2rem; font-weight: bold; color: var(--accent); font-family: monospace; }
+        #mainBtn { background: var(--accent); color: #000; border: none; padding: 18px; border-radius: 14px; font-weight: 900; width: 100%; font-size: 1rem; cursor: pointer; text-transform: uppercase; }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header-card" role="region" aria-label="Workout header">
-      <div id="sessionLabel" style="color: #666; font-size: 0.7rem; letter-spacing: 2px; font-weight: bold;">TRAINING SEQUENCE</div>
-      <div id="catDisplay" style="font-size: 1.8rem; font-weight: 900; color: var(--accent); margin: 10px 0;">READY</div>
-      <div class="progress-container" aria-hidden="true"><div id="progressBar"></div></div>
-      <button id="mainBtn" aria-live="polite">START WORKOUT</button>
-    </div>
-    <div id="list" aria-live="polite"></div>
-  </div>
 
-  <div class="timer-bar" role="region" aria-label="Rest timer">
-    <div>
-      <div style="font-size: 0.6rem; color: #666; font-weight: bold;">REST TIMER</div>
-      <div id="timerDisplay">01:00</div>
+<div class="container">
+    <div class="tab-nav">
+        <button id="tabWorkout" class="tab-btn active" onclick="switchTab('workout')">WORKOUT</button>
+        <button id="tabHistory" class="tab-btn" onclick="switchTab('history')">HISTORY</button>
     </div>
-    <button id="timerBtn" class="timer-btn">START</button>
-  </div>
+
+    <div id="viewWorkout">
+        <div class="header-card">
+            <div id="sessionLabel" style="color: #666; font-size: 0.7rem; font-weight: bold;">SESSION READY</div>
+            <div id="catDisplay" style="font-size: 1.8rem; font-weight: 900; color: var(--accent); margin: 10px 0;">READY</div>
+            <div id="progressWrapper" style="display:none">
+                <div style="height:6px; background:#333; border-radius:3px; margin:15px 0;"><div id="progressBar" style="height:100%; width:0%; background:var(--accent); transition:0.3s;"></div></div>
+            </div>
+            <button id="mainBtn">START WORKOUT</button>
+        </div>
+        <div id="list"></div>
+    </div>
+
+    <div id="viewHistory" style="display:none">
+        <button class="clear-btn" onclick="clearAllHistory()">CLEAR ALL HISTORY</button>
+        <div id="historyList"></div>
+    </div>
+</div>
+
+<div id="infoModal" class="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <h3 id="modalTitle" style="color: var(--accent); margin-top: 0;">INFO</h3>
+        <img id="modalImg" class="modal-img" src="" alt="Exercise Demo">
+        <button style="background:var(--accent); width:100%; padding:12px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;" onclick="closeModal()">GOT IT</button>
+    </div>
+</div>
+
+<div class="timer-bar">
+    <div><div id="timerDisplay">01:00</div></div>
+    <button id="timerBtn" style="padding:10px 20px; background:#333; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="toggleTimer()">START</button>
+</div>
 
 <script>
-/* Data library */
 const library = {
-  "Push": [
-    {n:"DB Bench Press", t:"Chest", bw: false}, {n:"Incline DB Press", t:"Chest", bw: false}, {n:"Pushups", t:"Chest", bw: true}, {n:"DB Flyes", t:"Chest", bw: false},
-    {n:"DB Overhead Press", t:"Shoulders", bw: false}, {n:"Arnold Press", t:"Shoulders", bw: false}, {n:"Lateral Raises", t:"Shoulders", bw: false},
-    {n:"DB Goblet Squats", t:"Legs", bw: false}, {n:"Bulgarian Split Squats", t:"Legs", bw: false}, {n:"Step Ups", t:"Legs", bw: false},
-    {n:"Dips", t:"Arms", bw: true}, {n:"Tricep Pushdowns", t:"Arms", bw: false}
-  ],
-  "Pull": [
-    {n:"One-Arm DB Rows", t:"Back", bw: false}, {n:"Weighted Pullups", t:"Back", bw: true}, {n:"Chest Supported Rows", t:"Back", bw: false}, {n:"Renegade Rows", t:"Back", bw: false},
-    {n:"DB Hammer Curls", t:"Arms", bw: false}, {n:"Bicep Curls", t:"Arms", bw: false}, {n:"Preacher Curls", t:"Arms", bw: false},
-    {n:"Face Pulls", t:"Shoulders", bw: false}, {n:"Rear Delt Flyes", t:"Shoulders", bw: false}
-  ],
-  "Lower": [
-    {n:"DB Romanian Deadlifts", t:"Legs", bw: false}, {n:"KB Swings", t:"Legs", bw: false}, {n:"DB Sumos", t:"Legs", bw: false},
-    {n:"Goblet Squats", t:"Legs", bw: false}, {n:"DB Lunges", t:"Legs", bw: false}, {n:"Calf Raises", t:"Legs", bw: false}
-  ],
-  "Cardio": ["Indoor Treadmill Run", "Treadmill Hike", "Outdoor Walk", "Stationary Bike"]
+    "Push": [{n:"DB Bench Press", t:"Chest"}, {n:"Incline DB Press", t:"Chest"}, {n:"Pushups", t:"Chest"}, {n:"DB Overhead Press", t:"Shoulders"}, {n:"Lateral Raises", t:"Shoulders"}, {n:"Bulgarian Split Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}],
+    "Pull": [{n:"One-Arm DB Rows", t:"Back"}, {n:"Weighted Pullups", t:"Back"}, {n:"Bicep Curls", t:"Arms"}, {n:"Face Pulls", t:"Shoulders"}],
+    "Lower": [{n:"DB Romanian Deadlifts", t:"Legs"}, {n:"KB Swings", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"Calf Raises", t:"Legs"}],
+    "Cardio": [{n:"Treadmill Run", t:"Cardio"}, {n:"Stationary Bike", t:"Cardio"}, {n:"Stairmaster", t:"Cardio"}]
 };
 
 const sequence = ["Push", "Cardio", "Pull", "Cardio", "Lower"];
 let state = { dayIdx: 0, exercises: [], completed: [], isStarted: false };
 
-/* Helpers */
-const getGoal = (target) => {
-  if (target === "Chest" || target === "Legs") return "4-5 Sets\\n12-15 Reps";
-  return "3-4 Sets\\n10-12 Reps";
+function switchTab(tab) {
+    document.getElementById('viewWorkout').style.display = tab === 'workout' ? 'block' : 'none';
+    document.getElementById('viewHistory').style.display = tab === 'history' ? 'block' : 'none';
+    document.getElementById('tabWorkout').classList.toggle('active', tab === 'workout');
+    document.getElementById('tabHistory').classList.toggle('active', tab === 'history');
+    if(tab === 'history') renderHistory();
+}
+
+window.showInfo = (name) => {
+    const modal = document.getElementById('infoModal');
+    const img = document.getElementById('modalImg');
+    document.getElementById('modalTitle').innerText = name.toUpperCase();
+    img.src = `https://loremflickr.com/400/400/gym,workout,${name.replace(/\s+/g, '')}`;
+    modal.style.display = 'flex';
 };
 
-function swapEx(idx) {
-  const currentCat = sequence[state.dayIdx];
-  if (currentCat === "Cardio") {
-    const otherOptions = library.Cardio.filter(c => c !== state.exercises[idx].n);
-    state.exercises[idx].n = otherOptions[Math.floor(Math.random() * otherOptions.length)];
-  } else {
-    const targetMuscle = state.exercises[idx].t;
-    const pool = library[currentCat].filter(ex => ex.t === targetMuscle && ex.n !== state.exercises[idx].n);
-    if (pool.length > 0) state.exercises[idx] = pool[Math.floor(Math.random() * pool.length)];
-  }
-  renderList();
-}
+window.closeModal = () => document.getElementById('infoModal').style.display = 'none';
 
-function generateWorkout() {
-  state.isStarted = true;
-  const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
-  const lastFinish = localStorage.getItem('arch_last_finish');
-  state.dayIdx = savedIdx;
-
-  const hoursSinceLast = lastFinish ? (Date.now() - parseInt(lastFinish)) / 3600000 : 99;
-  const isRested = hoursSinceLast > 24;
-
-  const currentCat = sequence[savedIdx];
-  document.getElementById('catDisplay').innerText = currentCat.toUpperCase();
-  state.exercises = [];
-  state.completed = [];
-
-  if (currentCat === "Cardio") {
-    const prevIdx = (savedIdx + 4) % 5;
-    let name;
-    if ((sequence[prevIdx] === "Push" || sequence[prevIdx] === "Lower") && !isRested) {
-      name = "Stationary Bike";
-    } else {
-      name = library.Cardio[Math.floor(Math.random() * library.Cardio.length)];
+function clearAllHistory() {
+    if (confirm("Are you sure? This will delete all logged workouts and reset your session progress.")) {
+        localStorage.clear();
+        location.reload();
     }
-    state.exercises.push({n: name, t: "Cardio", bw: true});
-  } else {
-    const pool = [...library[currentCat]].sort(() => 0.5 - Math.random());
-    state.exercises = pool.slice(0, 6).map(e => ({...e}));
-  }
-  renderList();
 }
 
-/* Render and DOM events (no inline handlers) */
+function getLastStats(name) {
+    const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
+    for (let i = history.length - 1; i >= 0; i--) {
+        const found = history[i].exercises.find(ex => ex.n === name);
+        if (found) {
+            return found.t === "Cardio" ? `PREV: ${found.dur || 0} mins` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`;
+        }
+    }
+    return "NEW EXERCISE";
+}
+
 function renderList() {
-  const container = document.getElementById('list');
-  container.innerHTML = "";
+    const container = document.getElementById('list');
+    container.innerHTML = "";
+    state.exercises.forEach((ex, idx) => {
+        const isDone = state.completed.includes(idx);
+        const div = document.createElement('div');
+        div.className = `item ${isDone ? 'done' : ''}`;
+        
+        let logUI = ex.t === "Cardio" 
+            ? `<input type="number" class="cardio-log" placeholder="Minutes" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
+            : `<div class="log-grid" onclick="event.stopPropagation()">
+                <input type="text" placeholder="lbs" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value">
+                <input type="number" placeholder="sets" value="${ex.s || ''}" oninput="state.exercises[${idx}].s = this.value">
+                <input type="number" placeholder="reps" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value">
+               </div>`;
 
-  state.exercises.forEach((ex, idx) => {
-    const isDone = state.completed.includes(idx);
-
-    if (idx === 2 && state.exercises.length > 1) {
-      const block = document.createElement('div');
-      block.className = 'superset-block';
-      block.id = 'superset-wrap';
-      block.innerHTML = '<div class="superset-badge">SUPERSET</div>';
-      container.appendChild(block);
-    }
-
-    const div = document.createElement('div');
-    div.className = `item ${isDone ? 'done' : ''}`;
-    div.setAttribute('data-idx', idx);
-
-    const header = document.createElement('div');
-    header.className = 'item-header';
-
-    const left = document.createElement('div');
-    const swapBtn = document.createElement('button');
-    swapBtn.className = 'swap-btn';
-    swapBtn.setAttribute('aria-label', 'Swap exercise');
-    swapBtn.dataset.idx = idx;
-    swapBtn.innerHTML = '<span class="swap-icon">🔄</span><b>' + ex.n + '</b>';
-    left.appendChild(swapBtn);
-
-    const goal = document.createElement('div');
-    goal.className = 'goal-tag';
-    goal.innerHTML = ex.t === 'Cardio' ? '30 Mins<br>Zone 2' : getGoal(ex.t).replace('\\n','<br>');
-
-    header.appendChild(left);
-    header.appendChild(goal);
-
-    const muscle = document.createElement('span');
-    muscle.className = 'muscle-tag';
-    muscle.innerText = ex.t;
-
-    div.appendChild(header);
-    div.appendChild(muscle);
-
-    if (!ex.bw) {
-      const input = document.createElement('input');
-      input.type = 'text';
-      input.placeholder = 'Weight';
-      input.dataset.idx = idx;
-      const savedWeights = JSON.parse(localStorage.getItem('arch_weights') || '{}');
-      if (savedWeights[state.dayIdx] && savedWeights[state.dayIdx][idx]) input.value = savedWeights[state.dayIdx][idx];
-      div.appendChild(input);
-      input.addEventListener('click', e => e.stopPropagation());
-      input.addEventListener('input', (e) => {
-        const weights = JSON.parse(localStorage.getItem('arch_weights') || '{}');
-        weights[state.dayIdx] = weights[state.dayIdx] || {};
-        weights[state.dayIdx][idx] = e.target.value;
-        localStorage.setItem('arch_weights', JSON.stringify(weights));
-      });
-    }
-
-    div.addEventListener('click', () => {
-      if (isDone) state.completed = state.completed.filter(i => i !== idx);
-      else state.completed.push(idx);
-      renderList();
+        div.innerHTML = `
+            <div class="item-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.2rem" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span> 
+                    <b style="font-size:1.1rem">${ex.n}</b>
+                </div>
+                <div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div>
+            </div>
+            <div class="last-badge">${getLastStats(ex.n)}</div>
+            ${logUI}
+        `;
+        div.onclick = () => {
+            if (isDone) state.completed = state.completed.filter(i => i !== idx);
+            else state.completed.push(idx);
+            renderList();
+        };
+        container.appendChild(div);
     });
+    updateUI();
+}
 
-    // swap action
-    swapBtn.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      swapEx(idx);
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
+    const container = document.getElementById('historyList');
+    container.innerHTML = history.length ? "" : "<p style='text-align:center; color:#666;'>No history found.</p>";
+    let lastDate = "";
+    history.slice().reverse().forEach(entry => {
+        const dateHeader = entry.date !== lastDate ? `<span class="history-date">${entry.date}</span>` : "";
+        lastDate = entry.date;
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+            ${dateHeader}
+            <div style="color:#888; font-size:0.75rem; margin-bottom:8px;">SESSION: ${entry.cat}</div>
+            ${entry.exercises.map(e => {
+                let stats = e.t === "Cardio" ? `${e.dur || 0} mins` : `${e.w || 0}lb | ${e.s || 0}x${e.r || 0}`;
+                return `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding:4px 0; border-bottom:1px solid #222;">
+                    <span>${e.n}</span><span style="color:var(--accent)">${stats}</span>
+                </div>`
+            }).join('')}
+        `;
+        container.appendChild(div);
     });
-
-    if ((idx === 2 || idx === 3) && document.getElementById('superset-wrap')) {
-      document.getElementById('superset-wrap').appendChild(div);
-    } else {
-      container.appendChild(div);
-    }
-  });
-
-  updateUI();
 }
 
 function updateUI() {
-  const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
-  document.getElementById('progressBar').style.width = progress + "%";
-  const btn = document.getElementById('mainBtn');
-
-  if (!state.isStarted) {
-    btn.innerText = "START WORKOUT";
-    btn.style.background = "#00d1b2";
-  } else if (progress === 100 && state.exercises.length>0) {
-    btn.innerText = "FINISH & SAVE";
-    btn.style.background = "#00d1b2";
-  } else {
-    btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
-    btn.style.background = "#333";
-  }
+    const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
+    document.getElementById('progressBar').style.width = progress + "%";
+    document.getElementById('progressWrapper').style.display = state.isStarted ? 'block' : 'none';
+    const btn = document.getElementById('mainBtn');
+    
+    if (!state.isStarted) {
+        btn.innerText = "START WORKOUT";
+    } else if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
+        btn.innerText = "FINISH & SAVE";
+    } else {
+        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
+    }
 }
 
-/* Timer with persistence while open (not across reloads) */
-let timerInt;
-let remaining = 60;
-const timerBtn = document.getElementById('timerBtn');
-const timerDisplay = document.getElementById('timerDisplay');
-
-timerBtn.addEventListener('click', function() {
-  if (timerInt) { clearInterval(timerInt); timerInt = null; remaining = 60; timerDisplay.innerText = "01:00"; this.innerText = "START"; return; }
-  let time = remaining;
-  this.innerText = "STOP";
-  timerDisplay.innerText = `00:${time<10 ? '0':''}${time}`;
-  timerInt = setInterval(() => {
-    time--;
-    remaining = time;
-    timerDisplay.innerText = time >= 0 ? `00:${time < 10 ? '0' : ''}${time}` : "DONE";
-    if (time <= 0) {
-      clearInterval(timerInt); timerInt = null; remaining = 60; timerDisplay.innerText = "DONE"; timerBtn.innerText = "START";
-      // small vibration if supported
-      if (navigator.vibrate) navigator.vibrate([200,100,200]);
+document.getElementById('mainBtn').onclick = function() {
+    if (!state.isStarted) {
+        // --- START LOGIC ---
+        state.isStarted = true;
+        const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
+        state.dayIdx = savedIdx;
+        const cat = sequence[savedIdx];
+        
+        document.getElementById('catDisplay').innerText = cat.toUpperCase();
+        
+        if (cat === "Cardio") {
+            const item = library.Cardio[Math.floor(Math.random() * library.Cardio.length)];
+            state.exercises = [{...item}];
+        } else {
+            state.exercises = [...library[cat]].sort(() => 0.5 - Math.random()).slice(0, 6).map(e => ({...e}));
+        }
+        renderList();
+    } else if (state.completed.length === state.exercises.length) {
+        // --- SAVE LOGIC ---
+        const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
+        const entry = { 
+            date: new Date().toLocaleDateString(), 
+            cat: sequence[state.dayIdx], 
+            exercises: JSON.parse(JSON.stringify(state.exercises)) // Deep copy
+        };
+        
+        history.push(entry);
+        localStorage.setItem('arch_history', JSON.stringify(history));
+        
+        // Move to next session index
+        const nextIdx = (state.dayIdx + 1) % sequence.length;
+        localStorage.setItem('arch_seq_idx', nextIdx);
+        
+        // Fully reset local state to prevent "double save" requirement
+        state.isStarted = false;
+        state.exercises = [];
+        state.completed = [];
+        
+        location.reload(); // Refresh to clean the slate
     }
-  }, 1000);
-});
+};
 
-/* Main button */
-document.getElementById('mainBtn').addEventListener('click', function() {
-  if (!state.isStarted) {
-    generateWorkout();
-  } else if (state.completed.length === state.exercises.length && state.exercises.length>0) {
-    localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % 5);
-    localStorage.setItem('arch_last_finish', Date.now().toString());
-    state.isStarted = false;
-    state.exercises = [];
-    state.completed = [];
-    const savedIdx = parseInt(localStorage.getItem('arch_seq_idx'));
-    document.getElementById('sessionLabel').innerText = `NEXT: SESSION ${savedIdx + 1}`;
+let timerInt;
+function toggleTimer() {
+    if (timerInt) { 
+        clearInterval(timerInt); 
+        timerInt = null; 
+        document.getElementById('timerDisplay').innerText = "01:00";
+        document.getElementById('timerBtn').innerText = "START";
+        return; 
+    }
+    let t = 60;
+    document.getElementById('timerBtn').innerText = "RESET";
+    timerInt = setInterval(() => {
+        t--; 
+        document.getElementById('timerDisplay').innerText = `00:${t < 10 ? '0' : ''}${t}`;
+        if (t <= 0) { 
+            clearInterval(timerInt); 
+            timerInt = null; 
+            document.getElementById('timerDisplay').innerText = "DONE";
+            document.getElementById('timerBtn').innerText = "START";
+        }
+    }, 1000);
+}
+
+window.onload = () => {
+    const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
     document.getElementById('catDisplay').innerText = sequence[savedIdx].toUpperCase();
-    document.getElementById('list').innerHTML = "";
-    updateUI();
-    window.scrollTo(0,0);
-  }
-});
-
-/* load */
-window.addEventListener('load', () => {
-  const savedIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
-  document.getElementById('sessionLabel').innerText = `NEXT: SESSION ${savedIdx + 1}`;
-  document.getElementById('catDisplay').innerText = sequence[savedIdx].toUpperCase();
-  updateUI();
-});
+    document.getElementById('sessionLabel').innerText = `READY FOR SESSION ${savedIdx + 1}`;
+};
 </script>
 </body>
 </html>
