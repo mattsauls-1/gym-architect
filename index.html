@@ -80,35 +80,52 @@
 </div>
 
 <script>
-// --- DATABASE & STATE ---
+// --- EXTENDED LOW-IMPACT LIBRARY ---
 const exerciseData = {
-    "DB Bench Press": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Bench-Press.gif", tips: "Keep shoulder blades retracted. Drive weights up without touching them." },
-    "Cable Chest Flys": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Cable-Chest-Fly.gif", tips: "Maintain slight bend in elbows. Squeeze chest at center." },
-    "Pushups": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Push-up.gif", tips: "Back flat. Body in a straight line. Lower chest to floor." },
-    "Lat Pulldowns": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Lat-Pulldown.gif", tips: "Pull bar to upper chest. Drive elbows to back pockets." },
-    "One-Arm DB Rows": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Row.gif", tips: "Pull weight to hip, not chest. Squeeze lats." },
-    "Seated Cable Rows": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Seated-Cable-Row.gif", tips: "Pull handle to stomach, squeeze shoulder blades." },
-    "DB Overhead Press": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Shoulder-Press.gif", tips: "Press straight up. Don't arch lower back." },
-    "Lateral Raises": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Lateral-Raise.gif", tips: "Lead with pinkies to emphasize side delt." },
-    "Cable Face Pulls": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Face-Pull.gif", tips: "Pull rope to forehead. Squeeze rear delts." },
-    "Bulgarian Split Squats": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Bulgarian-Split-Squat.gif", tips: "Rear foot on bench. Drop back knee to floor." },
-    "DB Romanian Deadlifts": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Romanian-Deadlift.gif", tips: "Hinge at hips. Feel hamstring stretch." },
-    "Goblet Squats": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Goblet-Squat.gif", tips: "Weight at chest. Elbows inside knees at bottom." },
-    "Tricep Pushdowns": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Triceps-Pushdown.gif", tips: "Pin elbows to ribs. Squeeze triceps at bottom." },
-    "Bicep Curls": { img: "https://www.strengthlog.com/wp-content/uploads/2020/03/Dumbbell-Curl.gif", tips: "No swinging. Curl toward shoulders." }
+    // CHEST (LOW IMPACT PULLEYS/MACHINES)
+    "Cable Chest Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-chest-fly.gif", tips: "CHEST (MID): Focus on the squeeze. Keep a slight bend in the elbows. Low impact on joints." },
+    "High-to-Low Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/high-to-low-cable-fly.gif", tips: "CHEST (LOWER): Cables set high. Pull down and across. Targets lower chest fibers." },
+    "Low-to-High Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/low-to-high-cable-fly.gif", tips: "CHEST (UPPER): Cables set low. Scoop upward. Great low-impact upper chest builder." },
+    "Pushups": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/push-up.gif", tips: "CHEST: Use handles if wrists hurt. Body straight, controlled tempo." },
+
+    // SHOULDERS (SPECIFIC PLANES)
+    "Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif", tips: "SHOULDERS (SIDE): Lead with elbows. Tilt thumbs down slightly. Targets side delts." },
+    "Cable Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-lateral-raise.gif", tips: "SHOULDERS (SIDE): Constant cable tension. Very smooth on the shoulder joint." },
+    "Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-front-raise.gif", tips: "SHOULDERS (FRONT): Lift to eye level. Don't swing. Targets front delts." },
+    "Cable Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-front-raise.gif", tips: "SHOULDERS (FRONT): Continuous pulley tension. Control the descent." },
+    "Rear Delt Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-rear-delt-row.gif", tips: "SHOULDERS (REAR): Hinge forward. Fly weights out. Squeeze back of shoulders." },
+    "Face Pulls": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/face-pull.gif", tips: "SHOULDERS (REAR/POSTURE): Pull rope to forehead. Pull ends apart. Essential for joint health." },
+
+    // BACK (CABLES/MACHINES)
+    "Lat Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lat-pulldown.gif", tips: "BACK (WIDTH): Pull to upper chest. Keep chest up. Don't use momentum." },
+    "Seated Cable Rows": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/seated-cable-row.gif", tips: "BACK (THICKNESS): Pull handle to stomach. Squeeze shoulder blades." },
+    "Straight Arm Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/straight-arm-pulldown.gif", tips: "BACK (LATS): Pull bar to thighs with straight arms. Isolates lats without bicep strain." },
+
+    // LEGS (STABLE/CONTROLLED)
+    "Goblet Squats": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/goblet-squat.gif", tips: "LEGS: Counterbalance with weight at chest. Easier on the back than bar squats." },
+    "Cable Pull Throughs": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-pull-through.gif", tips: "LEGS (HAMSTRINGS/GLUTES): Hinge at hips. Pull cable through legs. Low spine load." },
+    "Leg Press": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/leg-press.gif", tips: "LEGS: Maximum stability. Don't lock knees at the top." }
 };
 
 const library = {
-    "Push": [{n:"DB Bench Press", t:"Chest"}, {n:"Incline DB Press", t:"Chest"}, {n:"Cable Chest Flys", t:"Chest"}, {n:"Pushups", t:"Chest"}, {n:"DB Overhead Press", t:"Shoulders"}, {n:"Lateral Raises", t:"Shoulders"}, {n:"Bulgarian Split Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}],
-    "Pull": [{n:"Lat Pulldowns", t:"Back"}, {n:"One-Arm DB Rows", t:"Back"}, {n:"Seated Cable Rows", t:"Back"}, {n:"Weighted Pullups", t:"Back"}, {n:"Bicep Curls", t:"Arms"}, {n:"DB Hammer Curls", t:"Arms"}, {n:"Cable Face Pulls", t:"Shoulders"}, {n:"Rear Delt Flyes", t:"Shoulders"}],
-    "Lower": [{n:"DB Romanian Deadlifts", t:"Legs"}, {n:"KB Swings", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"DB Lunges", t:"Legs"}, {n:"Calf Raises", t:"Legs"}],
-    "Cardio": [{n:"Treadmill Run", t:"Cardio"}, {n:"Stationary Bike", t:"Cardio"}, {n:"Stairmaster", t:"Cardio"}]
+    "Push": [
+        {n:"Cable Chest Flys", t:"Chest"}, {n:"High-to-Low Flys", t:"Chest"}, {n:"Low-to-High Flys", t:"Chest"}, {n:"Pushups", t:"Chest"},
+        {n:"Cable Lateral Raises", t:"Shoulders"}, {n:"Side Lateral Raises", t:"Shoulders"}, {n:"Cable Front Raises", t:"Shoulders"}, {n:"Front Raises", t:"Shoulders"},
+        {n:"Goblet Squats", t:"Legs"}, {n:"Tricep Pushdowns", t:"Arms"}
+    ],
+    "Pull": [
+        {n:"Lat Pulldowns", t:"Back"}, {n:"Seated Cable Rows", t:"Back"}, {n:"Straight Arm Pulldowns", t:"Back"}, {n:"Face Pulls", t:"Shoulders"},
+        {n:"Rear Delt Flys", t:"Shoulders"}, {n:"Bicep Curls", t:"Arms"}, {n:"Cable Hammer Curls", t:"Arms"}
+    ],
+    "Lower": [
+        {n:"Cable Pull Throughs", t:"Legs"}, {n:"DB Romanian Deadlifts", t:"Legs"}, {n:"Goblet Squats", t:"Legs"}, {n:"Leg Press", t:"Legs"}, {n:"Calf Raises", t:"Legs"}
+    ],
+    "Cardio": [{n:"Stationary Bike", t:"Cardio"}, {n:"Stairmaster", t:"Cardio"}, {n:"Walking Hike", t:"Cardio"}]
 };
 
 const sequence = ["Push", "Cardio", "Pull", "Cardio", "Lower"];
 let state = { dayIdx: 0, exercises: [], completed: [], isStarted: false };
 
-// --- CORE FUNCTIONS ---
 function initApp() {
     state.dayIdx = parseInt(localStorage.getItem('arch_seq_idx') || "0");
     document.getElementById('catDisplay').innerText = sequence[state.dayIdx].toUpperCase();
@@ -142,7 +159,7 @@ window.swapEx = (idx) => {
 
 window.showInfo = (name) => {
     const modal = document.getElementById('infoModal');
-    const data = exerciseData[name] || { tips: "Focus on controlled motion.", img: "" };
+    const data = exerciseData[name] || { tips: "Maintain controlled motion and focus on muscle tension.", img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif" };
     document.getElementById('modalTitle').innerText = name.toUpperCase();
     document.getElementById('modalImg').src = data.img;
     document.getElementById('modalDesc').innerText = data.tips;
@@ -152,7 +169,7 @@ window.showInfo = (name) => {
 window.closeModal = () => document.getElementById('infoModal').style.display = 'none';
 
 function clearAllHistory() {
-    if (confirm("Reset everything to Session 1?")) { 
+    if (confirm("Reset to Session 1 and delete all history?")) { 
         localStorage.clear();
         initApp();
     }
@@ -163,10 +180,15 @@ function getLastStats(name) {
     for (let i = history.length - 1; i >= 0; i--) {
         const found = history[i].exercises.find(ex => ex.n === name);
         if (found) {
-            return found.t === "Cardio" ? `PREV: ${found.dur || 0}m` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`;
+            return {
+                summary: found.t === "Cardio" ? `PREV: ${found.dur || 0}m` : `PREV: ${found.w || 0}lb | ${found.s || 0}x${found.r || 0}`,
+                w: found.w || "",
+                s: found.s || "",
+                r: found.r || ""
+            };
         }
     }
-    return "NEW EXERCISE";
+    return null;
 }
 
 function renderList() {
@@ -174,15 +196,17 @@ function renderList() {
     container.innerHTML = "";
     state.exercises.forEach((ex, idx) => {
         const isDone = state.completed.includes(idx);
+        const last = getLastStats(ex.n);
+        
         const div = document.createElement('div');
         div.className = `item ${isDone ? 'done' : ''}`;
         
         let logUI = ex.t === "Cardio" 
-            ? `<input type="number" class="cardio-log" placeholder="Minutes" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
+            ? `<input type="number" class="cardio-log" placeholder="${last ? last.summary : 'Enter Minutes'}" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
             : `<div class="log-grid" onclick="event.stopPropagation()">
-                <input type="text" placeholder="lbs" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value">
-                <input type="number" placeholder="sets" value="${ex.s || ''}" oninput="state.exercises[${idx}].s = this.value">
-                <input type="number" placeholder="reps" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value">
+                <div><label style="font-size:0.5rem;color:#555">LB</label><input type="text" placeholder="${last ? last.w : '0'}" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value"></div>
+                <div><label style="font-size:0.5rem;color:#555">SET</label><input type="number" placeholder="${last ? last.s : '0'}" value="${ex.s || ''}" oninput="state.exercises[${idx}].s = this.value"></div>
+                <div><label style="font-size:0.5rem;color:#555">REP</label><input type="number" placeholder="${last ? last.r : '0'}" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value"></div>
                </div>`;
 
         div.innerHTML = `
@@ -194,7 +218,7 @@ function renderList() {
                 </div>
                 <div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div>
             </div>
-            <div class="last-badge">${getLastStats(ex.n)}</div>
+            <div class="last-badge">${last ? last.summary : 'FIRST TIME'}</div>
             ${logUI}
         `;
         div.onclick = () => {
@@ -244,15 +268,13 @@ function updateUI() {
         btn.innerText = "FINISH & SAVE SESSION";
         btn.style.background = "#fff";
     } else {
-        btn.innerText = `LOGGING: ${state.completed.length}/${state.exercises.length}`;
+        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
         btn.style.background = "#333";
     }
 }
 
-// --- BUTTON LOGIC ---
 document.getElementById('mainBtn').onclick = function() {
     if (!state.isStarted) {
-        // --- START WORKOUT ---
         state.isStarted = true;
         const cat = sequence[state.dayIdx];
         if (cat === "Cardio") {
@@ -264,7 +286,6 @@ document.getElementById('mainBtn').onclick = function() {
         renderList();
         window.scrollTo(0,0);
     } else if (state.completed.length === state.exercises.length) {
-        // --- SAVE WORKOUT (NO RELOAD) ---
         const history = JSON.parse(localStorage.getItem('arch_history') || "[]");
         history.push({ 
             date: new Date().toLocaleDateString(), 
@@ -272,12 +293,7 @@ document.getElementById('mainBtn').onclick = function() {
             exercises: JSON.parse(JSON.stringify(state.exercises)) 
         });
         localStorage.setItem('arch_history', JSON.stringify(history));
-        
-        // Update Session Index
-        const nextIdx = (state.dayIdx + 1) % sequence.length;
-        localStorage.setItem('arch_seq_idx', nextIdx.toString());
-        
-        // RESET SCREEN WITHOUT RELOAD
+        localStorage.setItem('arch_seq_idx', (state.dayIdx + 1) % sequence.length);
         initApp();
         window.scrollTo(0,0);
     }
@@ -304,7 +320,6 @@ function toggleTimer() {
     }, 1000);
 }
 
-// Start the app for the first time
 window.onload = initApp;
 </script>
 </body>
