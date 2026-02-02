@@ -1,4 +1,4 @@
-<html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -75,23 +75,20 @@
 
 <script>
 const exerciseData = {
-    "Flat Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-chest-fly.gif", tips: "CHEST: Focus on the squeeze. Keep a slight bend in elbows." },
-    "Incline Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/low-to-high-cable-fly.gif", tips: "UPPER CHEST: Scoop cables upward to eye level." },
+    "Flat Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-chest-fly.gif", tips: "CHEST: Focus on the squeeze at the center." },
+    "Incline Cable Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/low-to-high-cable-fly.gif", tips: "UPPER CHEST: Scoop cables upward." },
     "High-to-Low Flys": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/high-to-low-cable-fly.gif", tips: "LOWER CHEST: Pull down and across toward hips." },
-    "Dumbbell Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif", tips: "SIDE DELT: Lead with elbows. Tilt thumbs down at top." },
-    "Cable Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-lateral-raise.gif", tips: "SIDE DELT: Constant tension. Lean slightly away from pulley." },
-    "Dumbbell Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-front-raise.gif", tips: "FRONT DELT: Raise to shoulder height. Control the descent." },
-    "Cable Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-front-raise.gif", tips: "FRONT DELT: Pull cable from between legs for constant load." },
-    "Face Pulls": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/face-pull.gif", tips: "POSTURE: Pull rope to forehead, pulling ends apart." },
-    "Lat Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lat-pulldown.gif", tips: "BACK: Pull to upper chest. Think elbows to hips." },
-    "Seated Cable Rows": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/seated-cable-row.gif", tips: "BACK: Neutral spine. Squeeze shoulder blades." },
-    "Straight Arm Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/straight-arm-pulldown.gif", tips: "LATS: Keep arms straight. Pull bar to thighs." },
-    "Goblet Squats": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/goblet-squat.gif", tips: "LEGS: Weight at chest. Sit back. Low back safe." },
-    "Cable Pull Throughs": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-pull-through.gif", tips: "GLUTES/HAMS: Hinge at hips. Pull through legs." },
-    "Leg Press": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/leg-press.gif", tips: "LEGS: Stable platform. Don't lock knees." },
-    "Stationary Bike": { img: "", tips: "CARDIO: Maintain a steady RPM." },
-    "Stairmaster": { img: "", tips: "CARDIO: Focus on steady, deep steps." },
-    "Walking Hike": { img: "", tips: "CARDIO: Incline walking for heart health." }
+    "Dumbbell Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lateral-raise.gif", tips: "SIDE DELT: Lead with elbows." },
+    "Cable Side Lateral Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-lateral-raise.gif", tips: "SIDE DELT: Constant cable tension." },
+    "Dumbbell Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/dumbbell-front-raise.gif", tips: "FRONT DELT: Raise to shoulder height." },
+    "Cable Front Raises": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-front-raise.gif", tips: "FRONT DELT: Constant pulley tension." },
+    "Face Pulls": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/face-pull.gif", tips: "POSTURE: Pull rope to forehead." },
+    "Lat Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/lat-pulldown.gif", tips: "BACK: Think elbows to hips." },
+    "Seated Cable Rows": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/seated-cable-row.gif", tips: "BACK: Squeeze shoulder blades." },
+    "Straight Arm Pulldowns": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/straight-arm-pulldown.gif", tips: "LATS: Keep arms straight." },
+    "Goblet Squats": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/goblet-squat.gif", tips: "LEGS: Sit back. Weight at chest." },
+    "Cable Pull Throughs": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/cable-pull-through.gif", tips: "GLUTES: Hinge at hips." },
+    "Leg Press": { img: "https://vrtrainers.com/wp-content/uploads/2021/10/leg-press.gif", tips: "LEGS: Don't lock knees." }
 };
 
 const library = {
@@ -130,13 +127,13 @@ function initApp() {
     document.getElementById('list').innerHTML = "";
     document.getElementById('progressWrapper').style.display = 'none';
     
-    const mainBtn = document.getElementById('mainBtn');
     if (currentCat === "Rest") {
-        mainBtn.innerText = "COMPLETE REST DAY";
-        document.getElementById('list').innerHTML = `<div class="header-card" style="margin-top:20px; color:#888;"><p>RECOVERY MODE</p><p style="font-size:0.8rem;">Focus on sleep and hydration today.</p></div>`;
+        document.getElementById('mainBtn').innerText = "COMPLETE REST DAY";
+        document.getElementById('mainBtn').style.background = "var(--accent)";
+        document.getElementById('list').innerHTML = `<div class="header-card" style="margin-top:20px; color:#888;"><p>RECOVERY MODE</p></div>`;
     } else {
-        mainBtn.innerText = "START WORKOUT";
-        mainBtn.style.background = "var(--accent)";
+        document.getElementById('mainBtn').innerText = "START WORKOUT";
+        document.getElementById('mainBtn').style.background = "var(--accent)";
     }
     updateUI();
 }
@@ -150,22 +147,32 @@ function switchTab(tab) {
 }
 
 function updateUI() {
-    const progress = state.exercises.length > 0 ? (state.completed.length / state.exercises.length) * 100 : 0;
-    document.getElementById('progressBar').style.width = progress + "%";
-    document.getElementById('progressWrapper').style.display = state.isStarted ? 'block' : 'none';
     const btn = document.getElementById('mainBtn');
-    
-    if (sequence[state.dayIdx] === "Rest") return;
+    const progressWrapper = document.getElementById('progressWrapper');
+    const progressBar = document.getElementById('progressBar');
+    const currentCat = sequence[state.dayIdx];
+
+    if (currentCat === "Rest") return;
 
     if (!state.isStarted) {
+        progressWrapper.style.display = 'none';
         btn.innerText = "START WORKOUT";
         btn.style.background = "var(--accent)";
-    } else if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
-        btn.innerText = "FINISH & SAVE";
-        btn.style.background = "#fff";
+        btn.style.color = "#000";
     } else {
-        btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
-        btn.style.background = "#333";
+        progressWrapper.style.display = 'block';
+        const pct = (state.completed.length / state.exercises.length) * 100;
+        progressBar.style.width = pct + "%";
+
+        if (state.completed.length === state.exercises.length && state.exercises.length > 0) {
+            btn.innerText = "FINISH & SAVE SESSION";
+            btn.style.background = "#fff";
+            btn.style.color = "#000";
+        } else {
+            btn.innerText = `PROGRESS: ${state.completed.length}/${state.exercises.length}`;
+            btn.style.background = "#333";
+            btn.style.color = "#fff";
+        }
     }
 }
 
@@ -202,7 +209,10 @@ function renderList() {
     state.exercises.forEach((ex, idx) => {
         const isDone = state.completed.includes(idx);
         const last = getLastStats(ex.n);
-        const logUI = ex.t === "Cardio" 
+        const div = document.createElement('div');
+        div.className = `item ${isDone ? 'done' : ''}`;
+        
+        let logUI = ex.t === "Cardio" 
             ? `<input type="number" class="cardio-log" placeholder="${last ? last.summary : 'Minutes'}" value="${ex.dur || ''}" oninput="state.exercises[${idx}].dur = this.value" onclick="event.stopPropagation()">`
             : `<div class="log-grid" onclick="event.stopPropagation()">
                 <div><label style="font-size:0.5rem;color:#555">LB</label><input type="text" placeholder="${last ? last.w : '0'}" value="${ex.w || ''}" oninput="state.exercises[${idx}].w = this.value"></div>
@@ -210,13 +220,16 @@ function renderList() {
                 <div><label style="font-size:0.5rem;color:#555">REP</label><input type="number" placeholder="${last ? last.r : '0'}" value="${ex.r || ''}" oninput="state.exercises[${idx}].r = this.value"></div>
                </div>`;
 
-        const div = document.createElement('div');
-        div.className = `item ${isDone ? 'done' : ''}`;
         div.innerHTML = `<div class="item-header"><div style="display:flex; align-items:center;"><span class="icon-btn" onclick="event.stopPropagation(); window.swapEx(${idx})">🔄</span><span class="icon-btn" onclick="event.stopPropagation(); window.showInfo('${ex.n}')">ⓘ</span><b>${ex.n}</b></div><div style="font-size:0.7rem; color:var(--accent)">${ex.t.toUpperCase()}</div></div><div class="last-badge">${last ? last.summary : 'FIRST TIME'}</div>${logUI}`;
+        
         div.onclick = () => {
-            if (isDone) state.completed = state.completed.filter(i => i !== idx);
-            else state.completed.push(idx);
-            renderList();
+            if (isDone) {
+                state.completed = state.completed.filter(i => i !== idx);
+            } else {
+                state.completed.push(idx);
+            }
+            renderList(); // Re-render to show opacity change
+            updateUI();   // Update the button and progress bar
         };
         container.appendChild(div);
     });
@@ -230,6 +243,7 @@ window.swapEx = (idx) => {
         state.exercises[idx] = {...pool[Math.floor(Math.random() * pool.length)], w:'', s:'', r:''};
         state.completed = state.completed.filter(i => i !== idx);
         renderList();
+        updateUI();
     }
 };
 
